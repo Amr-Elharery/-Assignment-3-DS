@@ -227,11 +227,11 @@ private:
         return root;
     }
 
-    void inOrderHelper(AVLNode* node) const {
+    void inOrderHelper(AVLNode* node, vector<Item>& items) const {
         if (node) {
-            inOrderHelper(node->left);
-            node->data.print();
-            inOrderHelper(node->right);
+            inOrderHelper(node->left, items);
+            items.push_back(node->data);
+            inOrderHelper(node->right, items);
         }
     }
 
@@ -247,11 +247,39 @@ public:
     }
 
     void display() const {
-        inOrderHelper(root);
+        vector<Item> items;
+        inOrderHelper(root, items);
+        for (const auto& item : items) {
+            item.print();
+        }
     }
 
-    void displayInOrder() const {
-        inOrderHelper(root);
+    void displayInOrder(bool ascending = true) const {
+        vector<Item> items;
+        inOrderHelper(root, items);
+        if (!ascending) {
+            sort(items.rbegin(), items.rend());
+        }
+        for (const auto& item : items) {
+            item.print();
+        }
+    }
+
+    void displayByPrice(bool ascending = true) const {
+        vector<Item> items;
+        inOrderHelper(root, items);
+        if (ascending) {
+            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
+                return a.price < b.price;
+            });
+        } else {
+            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
+                return a.price > b.price;
+            });
+        }
+        for (const auto& item : items) {
+            item.print();
+        }
     }
 };
 
@@ -308,11 +336,11 @@ private:
         return current;
     }
 
-    void inOrderHelper(BSTNode* node) const {
+    void inOrderHelper(BSTNode* node, vector<Item>& items) const {
         if (node) {
-            inOrderHelper(node->left);
-            node->data.print();
-            inOrderHelper(node->right);
+            inOrderHelper(node->left, items);
+            items.push_back(node->data);
+            inOrderHelper(node->right, items);
         }
     }
 
@@ -328,11 +356,39 @@ public:
     }
 
     void display() const {
-        inOrderHelper(root);
+        vector<Item> items;
+        inOrderHelper(root, items);
+        for (const auto& item : items) {
+            item.print();
+        }
     }
 
-    void displayInOrder() const {
-        inOrderHelper(root);
+    void displayInOrder(bool ascending = true) const {
+        vector<Item> items;
+        inOrderHelper(root, items);
+        if (!ascending) {
+            sort(items.rbegin(), items.rend());
+        }
+        for (const auto& item : items) {
+            item.print();
+        }
+    }
+
+    void displayByPrice(bool ascending = true) const {
+        vector<Item> items;
+        inOrderHelper(root, items);
+        if (ascending) {
+            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
+                return a.price < b.price;
+            });
+        } else {
+            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
+                return a.price > b.price;
+            });
+        }
+        for (const auto& item : items) {
+            item.print();
+        }
     }
 };
 
@@ -353,7 +409,6 @@ void readItems(istream& input, BST& tree) {
         tree.addItem(Item(itemName, category, price));
     }
 }
-
 
 void displayMenu() {
     cout << "1. Binary Search Trees (BST)" << endl;
@@ -385,8 +440,11 @@ int main() {
     string itemName, category;
     int price;
 
-    ifstream inFile("E:\\Amr\\EDUCATION\\FCAI\\Second-Year\\Second-semester\\DataStructures\\Assignments\\Assignment-2\\data.txt");
-
+    ifstream inFile("data.txt");
+    if (!inFile) {
+        cerr << "Unable to open file data.txt";
+        return 1;
+    }
 
     do {
         displayMenu();
@@ -397,31 +455,36 @@ int main() {
                 do {
                     displayTreeMenu();
                     cin >> treeChoice;
+                    cin.ignore();
                     switch (treeChoice) {
                         case 1:
-                            cout << "Enter item name, category, and price: ";
-                            cin >> itemName >> category >> price;
+                            cout << "Enter item name: ";
+                            getline(cin, itemName);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
                             bst.addItem(Item(itemName, category, price));
                             break;
                         case 2:
                             cout << "Enter item name to remove: ";
-                            cin >> itemName;
+                            getline(cin, itemName);
                             bst.remove(Item(itemName, "", 0));
                             break;
                         case 3:
                             bst.display();
                             break;
                         case 4:
-                            bst.displayInOrder();
+                            bst.displayInOrder(true);
                             break;
                         case 5:
-                            // Add functionality for descending order
+                            bst.displayInOrder(false);
                             break;
                         case 6:
-                            // Add functionality for price ascending
+                            bst.displayByPrice(true);
                             break;
                         case 7:
-                            // Add functionality for price descending
+                            bst.displayByPrice(false);
                             break;
                         case 8:
                             readItems(inFile, bst);
@@ -433,10 +496,15 @@ int main() {
                 do {
                     displayTreeMenu();
                     cin >> treeChoice;
+                    cin.ignore();
                     switch (treeChoice) {
                         case 1:
-                            cout << "Enter item name, category, and price: ";
-                            cin >> itemName >> category >> price;
+                            cout << "Enter item name: ";
+                            getline(cin, itemName);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
                             minHeap.add(Item(itemName, category, price));
                             break;
                         case 2:
@@ -445,7 +513,13 @@ int main() {
                         case 3:
                             minHeap.display();
                             break;
-                            // Additional cases for heap operations
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+
+                        break;
                     }
                 } while (treeChoice != 9);
                 break;
@@ -453,31 +527,36 @@ int main() {
                 do {
                     displayTreeMenu();
                     cin >> treeChoice;
+                    cin.ignore();
                     switch (treeChoice) {
                         case 1:
-                            cout << "Enter item name, category, and price: ";
-                            cin >> itemName >> category >> price;
+                            cout << "Enter item name: ";
+                            getline(cin, itemName);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
                             avl.add(Item(itemName, category, price));
                             break;
                         case 2:
                             cout << "Enter item name to remove: ";
-                            cin >> itemName;
+                            getline(cin, itemName);
                             avl.remove(Item(itemName, "", 0));
                             break;
                         case 3:
                             avl.display();
                             break;
                         case 4:
-                            avl.displayInOrder();
+                            avl.displayInOrder(true);
                             break;
                         case 5:
-                            // Add functionality for descending order
+                            avl.displayInOrder(false);
                             break;
                         case 6:
-                            // Add functionality for price ascending
+                            avl.displayByPrice(true);
                             break;
                         case 7:
-                            // Add functionality for price descending
+                            avl.displayByPrice(false);
                             break;
                     }
                 } while (treeChoice != 9);
