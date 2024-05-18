@@ -30,7 +30,6 @@ public:
 class Heap {
 private:
     vector<Item> items;
-    bool isMinHeap;
 
     void heapifyUp(int index) {
         if (index && compare(items[index], items[parent(index)])) {
@@ -68,6 +67,7 @@ private:
     }
 
 public:
+    bool isMinHeap;
     Heap(bool minHeap = true) : isMinHeap(minHeap) {}
 
     void add(Item item) {
@@ -87,6 +87,21 @@ public:
         for (const auto& item : items) {
             item.print();
         }
+    }
+
+    void heapSort() {
+        vector<Item> originalItems = items;
+        while (size()) {
+            swap(items[0], items.back());
+            items.pop_back();
+            heapifyDown(0);
+        }
+        items = originalItems;
+    }
+
+    void displaySorted() {
+        heapSort();
+        display();
     }
 
     int size() const {
@@ -410,6 +425,42 @@ void readItems(istream& input, BST& tree) {
     }
 }
 
+void readItems(istream& input, Heap& heap) {
+    int numItems;
+    input >> numItems;
+    input.ignore();
+
+    for (int i = 0; i < numItems; ++i) {
+        string itemName, category;
+        int price;
+
+        getline(input, itemName);
+        getline(input, category);
+        input >> price;
+        input.ignore();
+
+        heap.add(Item(itemName, category, price));
+    }
+}
+
+void readItems(istream& input, AVL& tree) {
+    int numItems;
+    input >> numItems;
+    input.ignore();
+
+    for (int i = 0; i < numItems; ++i) {
+        string itemName, category;
+        int price;
+
+        getline(input, itemName);
+        getline(input, category);
+        input >> price;
+        input.ignore();
+
+        tree.add(Item(itemName, category, price));
+    }
+}
+
 void displayMenu() {
     cout << "1. Binary Search Trees (BST)" << endl;
     cout << "2. Heaps" << endl;
@@ -505,21 +556,35 @@ int main() {
                             getline(cin, category);
                             cout << "Enter price: ";
                             cin >> price;
-                            minHeap.add(Item(itemName, category, price));
+                            if (minHeap.isMinHeap)
+                                minHeap.add(Item(itemName, category, price));
+                            else
+                                maxHeap.add(Item(itemName, category, price));
                             break;
                         case 2:
-                            minHeap.remove();
+                            if (minHeap.isMinHeap)
+                                minHeap.remove();
+                            else
+                                maxHeap.remove();
                             break;
                         case 3:
-                            minHeap.display();
+                            if (minHeap.isMinHeap)
+                                minHeap.display();
+                            else
+                                maxHeap.display();
                             break;
                         case 4:
-                        case 5:
-                        case 6:
-                        case 7:
+                            if (minHeap.isMinHeap)
+                                minHeap.displaySorted();
+                            else
+                                maxHeap.displaySorted();
+                            break;
                         case 8:
-
-                        break;
+                            if (minHeap.isMinHeap)
+                                readItems(inFile, minHeap);
+                            else
+                                readItems(inFile, maxHeap);
+                            break;
                     }
                 } while (treeChoice != 9);
                 break;
@@ -557,6 +622,9 @@ int main() {
                             break;
                         case 7:
                             avl.displayByPrice(false);
+                            break;
+                        case 8:
+                            readItems(inFile, avl);
                             break;
                     }
                 } while (treeChoice != 9);
