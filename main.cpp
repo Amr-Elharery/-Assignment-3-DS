@@ -126,7 +126,10 @@ public:
         }
 
         heap = originalHeap;
-        display();
+
+        for (const auto &item : sorted) {
+            item.print();
+        }
     }
 };
 
@@ -674,16 +677,27 @@ int main()
                     break;
                 case 4:
                     if (minHeap.isMinHeap)
-                        minHeap.heapSortBy();
+                        minHeap.heapSortBy(true, true);
                     else
-                        maxHeap.heapSortBy();
+                        maxHeap.heapSortBy(true, true);
                     break;
                     case 5:
-                        minHeap.heapSortBy();
+                        if(minHeap.isMinHeap)
+                            minHeap.heapSortBy(true, false);
+                        else
+                            maxHeap.heapSortBy(true, false);
                         break;
                     case 6:
+                        if(minHeap.isMinHeap)
+                            minHeap.heapSortBy(false, true);
+                        else
+                            maxHeap.heapSortBy(false, true);
                     break;
                     case 7:
+                        if(minHeap.isMinHeap)
+                            minHeap.heapSortBy(false, false);
+                        else
+                            maxHeap.heapSortBy(false, false);
                         break;
                 case 8:
                     if (minHeap.isMinHeap)
