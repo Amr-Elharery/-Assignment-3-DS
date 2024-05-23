@@ -6,7 +6,8 @@
 
 using namespace std;
 
-class Item {
+class Item
+{
 public:
     string itemName;
     string category;
@@ -14,31 +15,38 @@ public:
 
     Item(string name, string cat, int pr) : itemName(name), category(cat), price(pr) {}
 
-    bool operator<(const Item& other) const {
+    bool operator<(const Item &other) const
+    {
         return itemName < other.itemName;
     }
 
-    bool operator>(const Item& other) const {
+    bool operator>(const Item &other) const
+    {
         return itemName > other.itemName;
     }
 
-    void print() const {
+    void print() const
+    {
         cout << "Item Name: " << itemName << ", Category: " << category << ", Price: " << price << endl;
     }
 };
 
-class Heap {
+class Heap
+{
 private:
     vector<Item> items;
 
-    void heapifyUp(int index) {
-        if (index && compare(items[index], items[parent(index)])) {
+    void heapifyUp(int index)
+    {
+        if (index && compare(items[index], items[parent(index)]))
+        {
             swap(items[index], items[parent(index)]);
             heapifyUp(parent(index));
         }
     }
 
-    void heapifyDown(int index) {
+    void heapifyDown(int index)
+    {
         int leftChild = left(index);
         int rightChild = right(index);
         int smallestOrLargest = index;
@@ -49,7 +57,8 @@ private:
         if (rightChild < size() && compare(items[rightChild], items[smallestOrLargest]))
             smallestOrLargest = rightChild;
 
-        if (smallestOrLargest != index) {
+        if (smallestOrLargest != index)
+        {
             swap(items[index], items[smallestOrLargest]);
             heapifyDown(smallestOrLargest);
         }
@@ -59,7 +68,8 @@ private:
     int left(int i) { return (2 * i + 1); }
     int right(int i) { return (2 * i + 2); }
 
-    bool compare(const Item& a, const Item& b) {
+    bool compare(const Item &a, const Item &b)
+    {
         if (isMinHeap)
             return a.price < b.price;
         else
@@ -70,28 +80,35 @@ public:
     bool isMinHeap;
     Heap(bool minHeap = true) : isMinHeap(minHeap) {}
 
-    void add(Item item) {
+    void add(Item item)
+    {
         items.push_back(item);
         heapifyUp(size() - 1);
     }
 
-    void remove() {
-        if (size()) {
+    void remove()
+    {
+        if (size())
+        {
             items[0] = items.back();
             items.pop_back();
             heapifyDown(0);
         }
     }
 
-    void display() const {
-        for (const auto& item : items) {
+    void display() const
+    {
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 
-    void heapSort() {
+    void heapSort()
+    {
         vector<Item> originalItems = items;
-        while (size()) {
+        while (size())
+        {
             swap(items[0], items.back());
             items.pop_back();
             heapifyDown(0);
@@ -99,41 +116,48 @@ public:
         items = originalItems;
     }
 
-    void displaySorted() {
+    void displaySorted()
+    {
         heapSort();
         display();
     }
 
-    int size() const {
+    int size() const
+    {
         return items.size();
     }
 };
 
-class AVLNode {
+class AVLNode
+{
 public:
     Item data;
-    AVLNode* left;
-    AVLNode* right;
+    AVLNode *left;
+    AVLNode *right;
     int height;
 
     AVLNode(Item item) : data(item), left(nullptr), right(nullptr), height(1) {}
 };
 
-class AVL {
+class AVL
+{
 private:
-    AVLNode* root;
+    AVLNode *root;
 
-    int height(AVLNode* node) {
+    int height(AVLNode *node)
+    {
         return node ? node->height : 0;
     }
 
-    int getBalance(AVLNode* node) {
+    int getBalance(AVLNode *node)
+    {
         return node ? height(node->left) - height(node->right) : 0;
     }
 
-    AVLNode* rightRotate(AVLNode* y) {
-        AVLNode* x = y->left;
-        AVLNode* T2 = x->right;
+    AVLNode *rightRotate(AVLNode *y)
+    {
+        AVLNode *x = y->left;
+        AVLNode *T2 = x->right;
         x->right = y;
         y->left = T2;
         y->height = max(height(y->left), height(y->right)) + 1;
@@ -141,9 +165,10 @@ private:
         return x;
     }
 
-    AVLNode* leftRotate(AVLNode* x) {
-        AVLNode* y = x->right;
-        AVLNode* T2 = y->left;
+    AVLNode *leftRotate(AVLNode *x)
+    {
+        AVLNode *y = x->right;
+        AVLNode *T2 = y->left;
         y->left = x;
         x->right = T2;
         x->height = max(height(x->left), height(x->right)) + 1;
@@ -151,7 +176,8 @@ private:
         return y;
     }
 
-    AVLNode* addHelper(AVLNode* node, Item item) {
+    AVLNode *addHelper(AVLNode *node, Item item)
+    {
         if (!node)
             return new AVLNode(item);
 
@@ -172,12 +198,14 @@ private:
         if (balance < -1 && item > node->right->data)
             return leftRotate(node);
 
-        if (balance > 1 && item > node->left->data) {
+        if (balance > 1 && item > node->left->data)
+        {
             node->left = leftRotate(node->left);
             return rightRotate(node);
         }
 
-        if (balance < -1 && item < node->right->data) {
+        if (balance < -1 && item < node->right->data)
+        {
             node->right = rightRotate(node->right);
             return leftRotate(node);
         }
@@ -185,14 +213,16 @@ private:
         return node;
     }
 
-    AVLNode* minValueNode(AVLNode* node) {
-        AVLNode* current = node;
+    AVLNode *minValueNode(AVLNode *node)
+    {
+        AVLNode *current = node;
         while (current->left != nullptr)
             current = current->left;
         return current;
     }
 
-    AVLNode* removeHelper(AVLNode* root, Item item) {
+    AVLNode *removeHelper(AVLNode *root, Item item)
+    {
         if (!root)
             return root;
 
@@ -200,17 +230,23 @@ private:
             root->left = removeHelper(root->left, item);
         else if (item > root->data)
             root->right = removeHelper(root->right, item);
-        else {
-            if ((!root->left) || (!root->right)) {
-                AVLNode* temp = root->left ? root->left : root->right;
-                if (!temp) {
+        else
+        {
+            if ((!root->left) || (!root->right))
+            {
+                AVLNode *temp = root->left ? root->left : root->right;
+                if (!temp)
+                {
                     temp = root;
                     root = nullptr;
-                } else
+                }
+                else
                     *root = *temp;
                 delete temp;
-            } else {
-                AVLNode* temp = minValueNode(root->right);
+            }
+            else
+            {
+                AVLNode *temp = minValueNode(root->right);
                 root->data = temp->data;
                 root->right = removeHelper(root->right, temp->data);
             }
@@ -226,7 +262,8 @@ private:
         if (balance > 1 && getBalance(root->left) >= 0)
             return rightRotate(root);
 
-        if (balance > 1 && getBalance(root->left) < 0) {
+        if (balance > 1 && getBalance(root->left) < 0)
+        {
             root->left = leftRotate(root->left);
             return rightRotate(root);
         }
@@ -234,7 +271,8 @@ private:
         if (balance < -1 && getBalance(root->right) <= 0)
             return leftRotate(root);
 
-        if (balance < -1 && getBalance(root->right) > 0) {
+        if (balance < -1 && getBalance(root->right) > 0)
+        {
             root->right = rightRotate(root->right);
             return leftRotate(root);
         }
@@ -242,8 +280,10 @@ private:
         return root;
     }
 
-    void inOrderHelper(AVLNode* node, vector<Item>& items) const {
-        if (node) {
+    void inOrderHelper(AVLNode *node, vector<Item> &items) const
+    {
+        if (node)
+        {
             inOrderHelper(node->left, items);
             items.push_back(node->data);
             inOrderHelper(node->right, items);
@@ -253,106 +293,137 @@ private:
 public:
     AVL() : root(nullptr) {}
 
-    void add(Item item) {
+    void add(Item item)
+    {
         root = addHelper(root, item);
     }
 
-    void remove(Item item) {
+    void remove(Item item)
+    {
         root = removeHelper(root, item);
     }
 
-    void display() const {
+    void display() const
+    {
         vector<Item> items;
         inOrderHelper(root, items);
-        for (const auto& item : items) {
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 
-    void displayInOrder(bool ascending = true) const {
+    void displayInOrder(bool ascending = true) const
+    {
         vector<Item> items;
         inOrderHelper(root, items);
-        if (!ascending) {
+        if (!ascending)
+        {
             sort(items.rbegin(), items.rend());
         }
-        for (const auto& item : items) {
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 
-    void displayByPrice(bool ascending = true) const {
+    void displayByPrice(bool ascending = true) const
+    {
         vector<Item> items;
         inOrderHelper(root, items);
-        if (ascending) {
-            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
-                return a.price < b.price;
-            });
-        } else {
-            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
-                return a.price > b.price;
-            });
+        if (ascending)
+        {
+            sort(items.begin(), items.end(), [](const Item &a, const Item &b)
+                 { return a.price < b.price; });
         }
-        for (const auto& item : items) {
+        else
+        {
+            sort(items.begin(), items.end(), [](const Item &a, const Item &b)
+                 { return a.price > b.price; });
+        }
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 };
 
-class BSTNode {
+class BSTNode
+{
 public:
     Item data;
-    BSTNode* left;
-    BSTNode* right;
+    BSTNode *left;
+    BSTNode *right;
 
     BSTNode(Item item) : data(item), left(nullptr), right(nullptr) {}
 };
 
-class BST {
+class BST
+{
 private:
-    BSTNode* root;
+    BSTNode *root;
 
-    void addHelper(BSTNode*& node, Item item) {
-        if (!node) {
+    void addHelper(BSTNode *&node, Item item)
+    {
+        if (!node)
+        {
             node = new BSTNode(item);
-        } else if (item < node->data) {
+        }
+        else if (item < node->data)
+        {
             addHelper(node->left, item);
-        } else {
+        }
+        else
+        {
             addHelper(node->right, item);
         }
     }
 
-    BSTNode* removeHelper(BSTNode* node, Item item) {
-        if (!node) return node;
-        if (item < node->data) {
+    BSTNode *removeHelper(BSTNode *node, Item item)
+    {
+        if (!node)
+            return node;
+        if (item < node->data)
+        {
             node->left = removeHelper(node->left, item);
-        } else if (item > node->data) {
+        }
+        else if (item > node->data)
+        {
             node->right = removeHelper(node->right, item);
-        } else {
-            if (!node->left) {
-                BSTNode* temp = node->right;
-                delete node;
-                return temp;
-            } else if (!node->right) {
-                BSTNode* temp = node->left;
+        }
+        else
+        {
+            if (!node->left)
+            {
+                BSTNode *temp = node->right;
                 delete node;
                 return temp;
             }
-            BSTNode* temp = minValueNode(node->right);
+            else if (!node->right)
+            {
+                BSTNode *temp = node->left;
+                delete node;
+                return temp;
+            }
+            BSTNode *temp = minValueNode(node->right);
             node->data = temp->data;
             node->right = removeHelper(node->right, temp->data);
         }
         return node;
     }
 
-    BSTNode* minValueNode(BSTNode* node) {
-        BSTNode* current = node;
+    BSTNode *minValueNode(BSTNode *node)
+    {
+        BSTNode *current = node;
         while (current && current->left != nullptr)
             current = current->left;
         return current;
     }
 
-    void inOrderHelper(BSTNode* node, vector<Item>& items) const {
-        if (node) {
+    void inOrderHelper(BSTNode *node, vector<Item> &items) const
+    {
+        if (node)
+        {
             inOrderHelper(node->left, items);
             items.push_back(node->data);
             inOrderHelper(node->right, items);
@@ -362,57 +433,69 @@ private:
 public:
     BST() : root(nullptr) {}
 
-    void addItem(Item item) {
+    void addItem(Item item)
+    {
         addHelper(root, item);
     }
 
-    void remove(Item item) {
+    void remove(Item item)
+    {
         root = removeHelper(root, item);
     }
 
-    void display() const {
+    void display() const
+    {
         vector<Item> items;
         inOrderHelper(root, items);
-        for (const auto& item : items) {
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 
-    void displayInOrder(bool ascending = true) const {
+    void displayInOrder(bool ascending = true) const
+    {
         vector<Item> items;
         inOrderHelper(root, items);
-        if (!ascending) {
+        if (!ascending)
+        {
             sort(items.rbegin(), items.rend());
         }
-        for (const auto& item : items) {
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 
-    void displayByPrice(bool ascending = true) const {
+    void displayByPrice(bool ascending = true) const
+    {
         vector<Item> items;
         inOrderHelper(root, items);
-        if (ascending) {
-            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
-                return a.price < b.price;
-            });
-        } else {
-            sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
-                return a.price > b.price;
-            });
+        if (ascending)
+        {
+            sort(items.begin(), items.end(), [](const Item &a, const Item &b)
+                 { return a.price < b.price; });
         }
-        for (const auto& item : items) {
+        else
+        {
+            sort(items.begin(), items.end(), [](const Item &a, const Item &b)
+                 { return a.price > b.price; });
+        }
+        for (const auto &item : items)
+        {
             item.print();
         }
     }
 };
 
-void readItems(istream& input, BST& tree) {
+void readItems(istream &input, BST &tree)
+{
     int numItems;
     input >> numItems;
     input.ignore();
 
-    for (int i = 0; i < numItems; ++i) {
+    for (int i = 0; i < numItems; ++i)
+    {
         string itemName, category;
         int price;
 
@@ -425,12 +508,14 @@ void readItems(istream& input, BST& tree) {
     }
 }
 
-void readItems(istream& input, Heap& heap) {
+void readItems(istream &input, Heap &heap)
+{
     int numItems;
     input >> numItems;
     input.ignore();
 
-    for (int i = 0; i < numItems; ++i) {
+    for (int i = 0; i < numItems; ++i)
+    {
         string itemName, category;
         int price;
 
@@ -443,12 +528,14 @@ void readItems(istream& input, Heap& heap) {
     }
 }
 
-void readItems(istream& input, AVL& tree) {
+void readItems(istream &input, AVL &tree)
+{
     int numItems;
     input >> numItems;
     input.ignore();
 
-    for (int i = 0; i < numItems; ++i) {
+    for (int i = 0; i < numItems; ++i)
+    {
         string itemName, category;
         int price;
 
@@ -461,28 +548,31 @@ void readItems(istream& input, AVL& tree) {
     }
 }
 
-void displayMenu() {
-    cout << "1. Binary Search Trees (BST)" << endl;
-    cout << "2. Heaps" << endl;
-    cout << "3. AVL Trees" << endl;
-    cout << "0. Exit" << endl;
-    cout << "Enter your choice: ";
+void Menu()
+{
+    cout << "1- ==> Binary Search Trees (BST)" << endl;
+    cout << "2- ==> Heaps" << endl;
+    cout << "3- ==> AVL Trees" << endl;
+    cout << "0- ==> Exit" << endl;
+    cout << "Your choice: ";
 }
 
-void displayTreeMenu() {
-    cout << "1. Add item" << endl;
-    cout << "2. Remove item" << endl;
-    cout << "3. Display items normally" << endl;
-    cout << "4. Display items sorted by name ascending" << endl;
-    cout << "5. Display items sorted by name descending" << endl;
-    cout << "6. Display items sorted by price ascending" << endl;
-    cout << "7. Display items sorted by price descending" << endl;
-    cout << "8. Read Items from File" << endl;
-    cout << "9. Back to Main Menu" << endl;
-    cout << "Enter your choice: ";
+void TreeMenu()
+{
+    cout << "1- ==> Add item" << endl;
+    cout << "2- ==> Remove item" << endl;
+    cout << "3- ==> Display items normally" << endl;
+    cout << "4- ==> Display items sorted by name ascending" << endl;
+    cout << "5- ==> Display items sorted by name descending" << endl;
+    cout << "6- ==> Display items sorted by price ascending" << endl;
+    cout << "7- ==> Display items sorted by price descending" << endl;
+    cout << "8- ==> Read Items from File" << endl;
+    cout << "9- ==> Back to Main Menu" << endl;
+    cout << "Your choice: ";
 }
 
-int main() {
+int main()
+{
     BST bst;
     Heap minHeap(true);
     Heap maxHeap(false);
@@ -492,143 +582,152 @@ int main() {
     int price;
 
     ifstream inFile("E:\\Amr\\EDUCATION\\FCAI\\Second-Year\\Second-semester\\DataStructures\\Assignments\\Assignment-2\\data.txt");
-    if (!inFile) {
+    if (!inFile)
+    {
         cerr << "Unable to open file data.txt";
         return 1;
     }
 
-    do {
-        displayMenu();
+    do
+    {
+        Menu();
         cin >> mainChoice;
 
-        switch (mainChoice) {
-            case 1:
-                do {
-                    displayTreeMenu();
-                    cin >> treeChoice;
-                    cin.ignore();
-                    switch (treeChoice) {
-                        case 1:
-                            cout << "Enter item name: ";
-                            getline(cin, itemName);
-                            cout << "Enter category: ";
-                            getline(cin, category);
-                            cout << "Enter price: ";
-                            cin >> price;
-                            bst.addItem(Item(itemName, category, price));
-                            break;
-                        case 2:
-                            cout << "Enter item name to remove: ";
-                            getline(cin, itemName);
-                            bst.remove(Item(itemName, "", 0));
-                            break;
-                        case 3:
-                            bst.display();
-                            break;
-                        case 4:
-                            bst.displayInOrder(true);
-                            break;
-                        case 5:
-                            bst.displayInOrder(false);
-                            break;
-                        case 6:
-                            bst.displayByPrice(true);
-                            break;
-                        case 7:
-                            bst.displayByPrice(false);
-                            break;
-                        case 8:
-                            readItems(inFile, bst);
-                            break;
-                    }
-                } while (treeChoice != 9);
-                break;
-            case 2:
-                do {
-                    displayTreeMenu();
-                    cin >> treeChoice;
-                    cin.ignore();
-                    switch (treeChoice) {
-                        case 1:
-                            cout << "Enter item name: ";
-                            getline(cin, itemName);
-                            cout << "Enter category: ";
-                            getline(cin, category);
-                            cout << "Enter price: ";
-                            cin >> price;
-                            if (minHeap.isMinHeap)
-                                minHeap.add(Item(itemName, category, price));
-                            else
-                                maxHeap.add(Item(itemName, category, price));
-                            break;
-                        case 2:
-                            if (minHeap.isMinHeap)
-                                minHeap.remove();
-                            else
-                                maxHeap.remove();
-                            break;
-                        case 3:
-                            if (minHeap.isMinHeap)
-                                minHeap.display();
-                            else
-                                maxHeap.display();
-                            break;
-                        case 4:
-                            if (minHeap.isMinHeap)
-                                minHeap.displaySorted();
-                            else
-                                maxHeap.displaySorted();
-                            break;
-                        case 8:
-                            if (minHeap.isMinHeap)
-                                readItems(inFile, minHeap);
-                            else
-                                readItems(inFile, maxHeap);
-                            break;
-                    }
-                } while (treeChoice != 9);
-                break;
-            case 3:
-                do {
-                    displayTreeMenu();
-                    cin >> treeChoice;
-                    cin.ignore();
-                    switch (treeChoice) {
-                        case 1:
-                            cout << "Enter item name: ";
-                            getline(cin, itemName);
-                            cout << "Enter category: ";
-                            getline(cin, category);
-                            cout << "Enter price: ";
-                            cin >> price;
-                            avl.add(Item(itemName, category, price));
-                            break;
-                        case 2:
-                            cout << "Enter item name to remove: ";
-                            getline(cin, itemName);
-                            avl.remove(Item(itemName, "", 0));
-                            break;
-                        case 3:
-                            avl.display();
-                            break;
-                        case 4:
-                            avl.displayInOrder(true);
-                            break;
-                        case 5:
-                            avl.displayInOrder(false);
-                            break;
-                        case 6:
-                            avl.displayByPrice(true);
-                            break;
-                        case 7:
-                            avl.displayByPrice(false);
-                            break;
-                        case 8:
-                            readItems(inFile, avl);
-                            break;
-                    }
-                } while (treeChoice != 9);
-                break;
+        switch (mainChoice)
+        {
+        case 1:
+            do
+            {
+                TreeMenu();
+                cin >> treeChoice;
+                cin.ignore();
+                switch (treeChoice)
+                {
+                case 1:
+                    cout << "Enter item name: ";
+                    getline(cin, itemName);
+                    cout << "Enter category: ";
+                    getline(cin, category);
+                    cout << "Enter price: ";
+                    cin >> price;
+                    bst.addItem(Item(itemName, category, price));
+                    break;
+                case 2:
+                    cout << "Enter item name to remove: ";
+                    getline(cin, itemName);
+                    bst.remove(Item(itemName, "", 0));
+                    break;
+                case 3:
+                    bst.display();
+                    break;
+                case 4:
+                    bst.displayInOrder(true);
+                    break;
+                case 5:
+                    bst.displayInOrder(false);
+                    break;
+                case 6:
+                    bst.displayByPrice(true);
+                    break;
+                case 7:
+                    bst.displayByPrice(false);
+                    break;
+                case 8:
+                    readItems(inFile, bst);
+                    break;
+                }
+            } while (treeChoice != 9);
+            break;
+        case 2:
+            do
+            {
+                TreeMenu();
+                cin >> treeChoice;
+                cin.ignore();
+                switch (treeChoice)
+                {
+                case 1:
+                    cout << "Enter item name: ";
+                    getline(cin, itemName);
+                    cout << "Enter category: ";
+                    getline(cin, category);
+                    cout << "Enter price: ";
+                    cin >> price;
+                    if (minHeap.isMinHeap)
+                        minHeap.add(Item(itemName, category, price));
+                    else
+                        maxHeap.add(Item(itemName, category, price));
+                    break;
+                case 2:
+                    if (minHeap.isMinHeap)
+                        minHeap.remove();
+                    else
+                        maxHeap.remove();
+                    break;
+                case 3:
+                    if (minHeap.isMinHeap)
+                        minHeap.display();
+                    else
+                        maxHeap.display();
+                    break;
+                case 4:
+                    if (minHeap.isMinHeap)
+                        minHeap.displaySorted();
+                    else
+                        maxHeap.displaySorted();
+                    break;
+                case 8:
+                    if (minHeap.isMinHeap)
+                        readItems(inFile, minHeap);
+                    else
+                        readItems(inFile, maxHeap);
+                    break;
+                }
+            } while (treeChoice != 9);
+            break;
+        case 3:
+            do
+            {
+                TreeMenu();
+                cin >> treeChoice;
+                cin.ignore();
+                switch (treeChoice)
+                {
+                case 1:
+                    cout << "Enter item name: ";
+                    getline(cin, itemName);
+                    cout << "Enter category: ";
+                    getline(cin, category);
+                    cout << "Enter price: ";
+                    cin >> price;
+                    avl.add(Item(itemName, category, price));
+                    break;
+                case 2:
+                    cout << "Enter item name to remove: ";
+                    getline(cin, itemName);
+                    avl.remove(Item(itemName, "", 0));
+                    break;
+                case 3:
+                    avl.display();
+                    break;
+                case 4:
+                    avl.displayInOrder(true);
+                    break;
+                case 5:
+                    avl.displayInOrder(false);
+                    break;
+                case 6:
+                    avl.displayByPrice(true);
+                    break;
+                case 7:
+                    avl.displayByPrice(false);
+                    break;
+                case 8:
+                    readItems(inFile, avl);
+                    break;
+                }
+            } while (treeChoice != 9);
+            break;
         }
     } while (mainChoice != 0);
 
