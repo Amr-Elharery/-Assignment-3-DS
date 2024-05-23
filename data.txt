@@ -11,7 +11,7 @@ drink
 cheddar cheese
 dairy
 49
-Tuna
+tuna
 meat
 90
 fanta orange
