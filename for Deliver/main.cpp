@@ -491,7 +491,7 @@ int main() {
     string itemName, category;
     int price;
 
-    ifstream inFile("E:\\Amr\\EDUCATION\\FCAI\\Second-Year\\Second-semester\\DataStructures\\Assignments\\Assignment-2\\data.txt");
+    ifstream inFile("data.txt");
     if (!inFile) {
         cerr << "Unable to open file data.txt";
         return 1;
