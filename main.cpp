@@ -34,13 +34,31 @@ public:
 class Heap
 {
 private:
-    vector<Item> items;
+    vector<Item> heap;
+
+    int parent(int i) {
+        return (i - 1) / 2;
+    }
+    int left(int i) {
+        return (2 * i + 1);
+    }
+    int right(int i) {
+        return (2 * i + 2);
+    }
+
+    bool compare(const Item &item1, const Item &item2)
+    {
+        if (isMinHeap)
+            return item1.price < item2.price;
+        else
+            return item1.price > item2.price;
+    }
 
     void heapifyUp(int index)
     {
-        if (index && compare(items[index], items[parent(index)]))
+        if (index && compare(heap[index], heap[parent(index)]))
         {
-            swap(items[index], items[parent(index)]);
+            swap(heap[index], heap[parent(index)]);
             heapifyUp(parent(index));
         }
     }
@@ -51,30 +69,20 @@ private:
         int rightChild = right(index);
         int smallestOrLargest = index;
 
-        if (leftChild < size() && compare(items[leftChild], items[index]))
+        if (leftChild < size() && compare(heap[leftChild], heap[index]))
             smallestOrLargest = leftChild;
 
-        if (rightChild < size() && compare(items[rightChild], items[smallestOrLargest]))
+        if (rightChild < size() && compare(heap[rightChild], heap[smallestOrLargest]))
             smallestOrLargest = rightChild;
 
         if (smallestOrLargest != index)
         {
-            swap(items[index], items[smallestOrLargest]);
+            swap(heap[index], heap[smallestOrLargest]);
             heapifyDown(smallestOrLargest);
         }
     }
 
-    int parent(int i) { return (i - 1) / 2; }
-    int left(int i) { return (2 * i + 1); }
-    int right(int i) { return (2 * i + 2); }
 
-    bool compare(const Item &a, const Item &b)
-    {
-        if (isMinHeap)
-            return a.price < b.price;
-        else
-            return a.price > b.price;
-    }
 
 public:
     bool isMinHeap;
@@ -82,7 +90,7 @@ public:
 
     void add(Item item)
     {
-        items.push_back(item);
+        heap.push_back(item);
         heapifyUp(size() - 1);
     }
 
@@ -90,41 +98,37 @@ public:
     {
         if (size())
         {
-            items[0] = items.back();
-            items.pop_back();
+            heap[0] = heap.back();
+            heap.pop_back();
             heapifyDown(0);
         }
     }
 
     void display() const
     {
-        for (const auto &item : items)
+        for (const auto &item : heap)
         {
             item.print();
         }
     }
 
-    void heapSort()
-    {
-        vector<Item> originalItems = items;
-        while (size())
-        {
-            swap(items[0], items.back());
-            items.pop_back();
-            heapifyDown(0);
-        }
-        items = originalItems;
-    }
-
-    void displaySorted()
-    {
-        heapSort();
-        display();
-    }
-
     int size() const
     {
-        return items.size();
+        return heap.size();
+    }
+
+    void heapSortBy(bool sortByName = true, bool ascending = true)
+    {
+        vector<Item> originalHeap = heap;
+        auto comp = [sortByName, ascending](const Item &a, const Item &b) {
+            if (sortByName)
+                return ascending ? a.itemName < b.itemName : a.itemName > b.itemName;
+            else
+                return ascending ? a.price < b.price : a.price > b.price;
+        };
+        sort(heap.begin(), heap.end(), comp);
+        display();
+        heap = originalHeap;
     }
 };
 
@@ -672,10 +676,17 @@ int main()
                     break;
                 case 4:
                     if (minHeap.isMinHeap)
-                        minHeap.displaySorted();
+                        minHeap.heapSortBy();
                     else
-                        maxHeap.displaySorted();
+                        maxHeap.heapSortBy();
                     break;
+                    case 5:
+                        minHeap.heapSortBy();
+                        break;
+                    case 6:
+                    break;
+                    case 7:
+                        break;
                 case 8:
                     if (minHeap.isMinHeap)
                         readItems(inFile, minHeap);
