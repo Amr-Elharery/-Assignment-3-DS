@@ -46,39 +46,35 @@ private:
         return (2 * i + 2);
     }
 
-    bool compare(const Item &item1, const Item &item2)
-    {
-        if (isMinHeap)
-            return item1.price < item2.price;
-        else
-            return item1.price > item2.price;
-    }
-
-    void heapifyUp(int index)
-    {
-        if (index && compare(heap[index], heap[parent(index)]))
-        {
-            swap(heap[index], heap[parent(index)]);
-            heapifyUp(parent(index));
+    bool compare(const Item &item1, const Item &item2, bool sortByName, bool ascending) {
+        if (sortByName) {
+            return ascending ? item1.itemName < item2.itemName : item1.itemName > item2.itemName;
+        } else {
+            return ascending ? item1.price < item2.price : item1.price > item2.price;
         }
     }
 
-    void heapifyDown(int index)
-    {
+    void heapifyUp(int index, bool sortByName = true, bool ascending = true) {
+        if (index && compare(heap[index], heap[parent(index)], sortByName, ascending)) {
+            swap(heap[index], heap[parent(index)]);
+            heapifyUp(parent(index), sortByName, ascending);
+        }
+    }
+
+    void heapifyDown(int index, bool sortByName = true, bool ascending = true) {
         int leftChild = left(index);
         int rightChild = right(index);
         int smallestOrLargest = index;
 
-        if (leftChild < size() && compare(heap[leftChild], heap[index]))
+        if (leftChild < size() && compare(heap[leftChild], heap[index], sortByName, ascending))
             smallestOrLargest = leftChild;
 
-        if (rightChild < size() && compare(heap[rightChild], heap[smallestOrLargest]))
+        if (rightChild < size() && compare(heap[rightChild], heap[smallestOrLargest], sortByName, ascending))
             smallestOrLargest = rightChild;
 
-        if (smallestOrLargest != index)
-        {
+        if (smallestOrLargest != index) {
             swap(heap[index], heap[smallestOrLargest]);
-            heapifyDown(smallestOrLargest);
+            heapifyDown(smallestOrLargest, sortByName, ascending);
         }
     }
 
@@ -120,15 +116,17 @@ public:
     void heapSortBy(bool sortByName = true, bool ascending = true)
     {
         vector<Item> originalHeap = heap;
-        auto comp = [sortByName, ascending](const Item &a, const Item &b) {
-            if (sortByName)
-                return ascending ? a.itemName < b.itemName : a.itemName > b.itemName;
-            else
-                return ascending ? a.price < b.price : a.price > b.price;
-        };
-        sort(heap.begin(), heap.end(), comp);
-        display();
+        vector<Item> sorted;
+
+        while (size()) {
+            sorted.push_back(heap[0]);
+            heap[0] = heap.back();
+            heap.pop_back();
+            heapifyDown(0, sortByName, ascending);
+        }
+
         heap = originalHeap;
+        display();
     }
 };
 
